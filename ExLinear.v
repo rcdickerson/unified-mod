@@ -152,7 +152,7 @@ Lemma dup_lmctx0: l_mctx0 = l_mctx0 ::+:: l_mctx0.
 Proof. auto. Qed.
 
 
-(* \x. (x, x) : T -> (T, T) *)
+(* \1x. (x, x) : T -> (T, T) *)
 Example prod_abs: forall T, l_mctx0 ;; empty |-
                        tm_abs lm1 "x" (tm_prod (tm_var "x") (tm_var "x")) \in
                        ty_arrow lm1 T (ty_prod T T).
@@ -163,3 +163,16 @@ Proof.
   apply t_prod_intro;
     apply t_var; auto.
 Qed.
+
+(* \0x. (x, x) : T -> (T, T) *)
+Example prod_abs_bad: forall T, l_mctx0 ;; empty |-
+                       tm_abs lm0 "x" (tm_prod (tm_var "x") (tm_var "x")) \in
+                       ty_arrow lm0 T (ty_prod T T).
+Proof.
+  intros.
+  apply t_abs.
+  rewrite dup_lmctx0.
+  apply t_prod_intro;
+    apply t_var; auto.
+  (* Stuck; type context is boxed with the wrong modality. *)
+  Abort.
